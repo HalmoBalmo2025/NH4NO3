@@ -28,7 +28,6 @@ struct Salt {
     mg: f64,
     s: f64,   // elemental S (not SO₄²⁻)
     cl: f64,
-    fe: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -86,44 +85,92 @@ fn FertilizerOptimizer() -> Element {
     let mut max_cl = use_signal(|| 2.0);
     let mut max_cl_focused = use_signal(|| false);
     let mut result = use_signal(|| None::<OptimizationResult>);
+    let mut current_result = use_signal(|| None::<OptimizationResult>);
     let mut error_msg = use_signal(|| None::<String>);
     let mut comparison_history = use_signal(|| Vec::<ComparisonEntry>::new());
 
     let salts: Vec<Salt> = vec![
-        Salt { name: "Ca(NO₃)₂·4H₂O", nh4: 0.0, no3: 0.525133, p: 0.0, k: 0.0, ca: 0.169717, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.0 },
-        Salt { name: "Mg(NO₃)₂·6H₂O", nh4: 0.0, no3: 0.483645, p: 0.0, k: 0.0, ca: 0.0, mg: 0.094792, s: 0.0, cl: 0.0, fe: 0.0 },
-        Salt { name: "KNO₃", nh4: 0.0, no3: 0.613282, p: 0.0, k: 0.386718, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.0 },
-        Salt { name: "(NH₄)₂SO₄", nh4: 0.273031, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.242661, cl: 0.0, fe: 0.0 },
-        Salt { name: "NH₄H₂PO₄", nh4: 0.156827, no3: 0.0, p: 0.269281, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.0 },
-        Salt { name: "NH₄Cl", nh4: 0.337247, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.662753, fe: 0.0 },
-        Salt { name: "KH₂PO₄", nh4: 0.0, no3: 0.0, p: 0.227609, k: 0.287308, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.0 },
-        Salt { name: "K₂SO₄", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.448740, ca: 0.0, mg: 0.0, s: 0.184010, cl: 0.0, fe: 0.0 },
-        Salt { name: "MgSO₄·7H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.098612, s: 0.130096, cl: 0.0, fe: 0.0 },
-        Salt { name: "CaCl₂·2H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.272625, mg: 0.0, s: 0.0, cl: 0.482287, fe: 0.0 },
-        Salt { name: "Fe‑EDDHA 6%", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.060000 },
-        Salt { name: "Ferty 10", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0, fe: 0.0 },
+        Salt { name: "Ca(NO₃)₂·4H₂O", nh4: 0.0, no3: 0.525133, p: 0.0, k: 0.0, ca: 0.169717, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "Mg(NO₃)₂·6H₂O", nh4: 0.0, no3: 0.483645, p: 0.0, k: 0.0, ca: 0.0, mg: 0.094792, s: 0.0, cl: 0.0},
+        Salt { name: "KNO₃", nh4: 0.0, no3: 0.613282, p: 0.0, k: 0.386718, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "(NH₄)₂SO₄", nh4: 0.273031, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.242661, cl: 0.0},
+        Salt { name: "NH₄H₂PO₄", nh4: 0.156827, no3: 0.0, p: 0.269281, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "NH₄Cl", nh4: 0.337247, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.662753},
+        Salt { name: "KH₂PO₄", nh4: 0.0, no3: 0.0, p: 0.227609, k: 0.287308, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "K₂SO₄", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.448740, ca: 0.0, mg: 0.0, s: 0.184010, cl: 0.0},
+        Salt { name: "MgSO₄·7H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.098612, s: 0.130096, cl: 0.0},
+        Salt { name: "CaCl₂·2H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.272625, mg: 0.0, s: 0.0, cl: 0.482287},
+        Salt { name: "Fe‑EDDHA 6%", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "Ferty 10", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "Ferty 12", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "Ferty 72", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
     ];
 
-    let optimize = move |_| {
-        let optimization_result = optimize_recipe(min_n(), max_n(), nh4_ratio(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl(), &salts);
-        match optimization_result {
-            Ok(res) => {
-                // Add to comparison history
-                let entry = ComparisonEntry {
-                    result: res.clone(),
-                    timestamp: format!("{:.0}% NH₄⁺", nh4_percentage()),
-                };
-                comparison_history.with_mut(|history| {
-                    history.push(entry);
-                });
-                
-                result.set(Some(res));
-                error_msg.set(None);
+    // Initial optimization on component mount
+    use_effect({
+        let salts = salts.clone();
+        move || {
+            let optimization_result = optimize_recipe(min_n(), max_n(), nh4_ratio(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl(), false, &salts);
+            match optimization_result {
+                Ok(res) => {
+                    result.set(Some(res.clone()));
+                    current_result.set(Some(res));
+                    error_msg.set(None);
+                }
+                Err(e) => {
+                    error_msg.set(Some(format!("Nicht lösbar: {}", e)));
+                }
             }
-            Err(e) => {
-                error_msg.set(Some(format!("Optimization failed: {}", e)));
-                result.set(None);
+        }
+    });
+
+    // Real-time optimization when parameters change
+    use_effect({
+        let salts = salts.clone();
+        move || {
+            // This effect runs when any of these values change
+            let _deps = (min_n(), max_n(), nh4_percentage(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl());
+            
+            let optimization_result = optimize_recipe(min_n(), max_n(), nh4_ratio(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl(), false, &salts);
+            match optimization_result {
+                Ok(res) => {
+                    current_result.set(Some(res));
+                    error_msg.set(None);
+                }
+                Err(e) => {
+                    error_msg.set(Some(format!("Nicht lösbar: {}", e)));
+                }
             }
+        }
+    });
+
+    let fine_tune = {
+        let salts = salts.clone();
+        move |_| {
+            let optimization_result = optimize_recipe(min_n(), max_n(), nh4_ratio(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl(), true, &salts);
+            match optimization_result {
+                Ok(res) => {
+                    result.set(Some(res.clone()));
+                    current_result.set(Some(res));
+                    error_msg.set(None);
+                }
+                Err(e) => {
+                    error_msg.set(Some(format!("Feinabstimmung fehlgeschlagen: {}", e)));
+                }
+            }
+        }
+    };
+
+    let save_recipe = move |_| {
+        if let Some(res) = current_result() {
+            let entry = ComparisonEntry {
+                result: res.clone(),
+                timestamp: format!("{:.0}% NH₄⁺", nh4_percentage()),
+            };
+            comparison_history.with_mut(|history| {
+                history.push(entry);
+            });
+            result.set(Some(res));
         }
     };
 
@@ -569,8 +616,14 @@ fn FertilizerOptimizer() -> Element {
                             }
                         }
 
-                        button { class: "optimize-btn", onclick: optimize,
-                            "🔬 Optimize Recipe"
+                        button { class: "optimize-btn", onclick: fine_tune,
+                            "🔬 Feinabstimmung"
+                        }
+
+                        if let Some(_) = result() {
+                            button { class: "save-btn", onclick: save_recipe,
+                                "💾 Rezept speichern"
+                            }
                         }
 
                         if let Some(error) = error_msg() {
@@ -645,44 +698,62 @@ fn FertilizerOptimizer() -> Element {
                         }
                     }
 
-                    // Comparison table
-                    if !comparison_history().is_empty() {
-                        div { class: "comparison-section",
-                            div { class: "comparison-header",
-                                h2 { "Ratio Comparison" }
+                    // Comparison table - always visible
+                    div { class: "comparison-section",
+                        div { class: "comparison-header",
+                            h2 { "📊 Ratio Comparison" }
+                            if !comparison_history().is_empty() {
                                 button { class: "clear-btn", onclick: clear_history,
                                     "Clear History"
                                 }
                             }
-                            
-                            div { class: "comparison-table",
-                                table {
-                                    thead {
+                        }
+                        
+                        div { class: "comparison-table",
+                            table {
+                                thead {
+                                    tr {
+                                        th { "NH₄⁺ Ratio" }
+                                        th { "NH₄⁺ (g·L⁻¹)" }
+                                        th { "NO₃⁻ (g·L⁻¹)" }
+                                        th { "K⁺ (g·L⁻¹)" }
+                                        th { "P (g·L⁻¹)" }
+                                        th { "Ca²⁺ (g·L⁻¹)" }
+                                        th { "Mg²⁺ (g·L⁻¹)" }
+                                        th { "S (g·L⁻¹)" }
+                                        th { "Cl⁻ (g·L⁻¹)" }
+                                        th { "Status" }
+                                    }
+                                }
+                                tbody {
+                                    // Show saved recipes
+                                    for entry in comparison_history().iter() {
                                         tr {
-                                            th { "NH₄⁺ Ratio" }
-                                            th { "NH₄⁺ (g·L⁻¹)" }
-                                            th { "NO₃⁻ (g·L⁻¹)" }
-                                            th { "K⁺ (g·L⁻¹)" }
-                                            th { "P (g·L⁻¹)" }
-                                            th { "Ca²⁺ (g·L⁻¹)" }
-                                            th { "Mg²⁺ (g·L⁻¹)" }
-                                            th { "S (g·L⁻¹)" }
-                                            th { "Cl⁻ (g·L⁻¹)" }
+                                            td { class: "ratio-cell", "{entry.timestamp}" }
+                                            td { class: "nutrient-cell nh4", "{entry.result.nh4_actual:.3}" }
+                                            td { class: "nutrient-cell no3", "{entry.result.no3_actual:.3}" }
+                                            td { class: "nutrient-cell k", "{entry.result.k_actual:.3}" }
+                                            td { class: "nutrient-cell p", "{entry.result.p_actual:.3}" }
+                                            td { class: "nutrient-cell ca", "{entry.result.ca_actual:.3}" }
+                                            td { class: "nutrient-cell mg", "{entry.result.mg_actual:.3}" }
+                                            td { class: "nutrient-cell s", "{entry.result.s_actual:.3}" }
+                                            td { class: "nutrient-cell cl", "{entry.result.cl_actual:.3}" }
+                                            td { class: "status-saved", "💾 Gespeichert" }
                                         }
                                     }
-                                    tbody {
-                                        for entry in comparison_history().iter() {
-                                            tr {
-                                                td { class: "ratio-cell", "{entry.timestamp}" }
-                                                td { class: "nutrient-cell nh4", "{entry.result.nh4_actual:.3}" }
-                                                td { class: "nutrient-cell no3", "{entry.result.no3_actual:.3}" }
-                                                td { class: "nutrient-cell k", "{entry.result.k_actual:.3}" }
-                                                td { class: "nutrient-cell p", "{entry.result.p_actual:.3}" }
-                                                td { class: "nutrient-cell ca", "{entry.result.ca_actual:.3}" }
-                                                td { class: "nutrient-cell mg", "{entry.result.mg_actual:.3}" }
-                                                td { class: "nutrient-cell s", "{entry.result.s_actual:.3}" }
-                                                td { class: "nutrient-cell cl", "{entry.result.cl_actual:.3}" }
-                                            }
+                                    // Show current live result
+                                    if let Some(current) = current_result() {
+                                        tr { class: "current-row",
+                                            td { class: "ratio-cell current", "{nh4_percentage():.0}% NH₄⁺" }
+                                            td { class: "nutrient-cell nh4", "{current.nh4_actual:.3}" }
+                                            td { class: "nutrient-cell no3", "{current.no3_actual:.3}" }
+                                            td { class: "nutrient-cell k", "{current.k_actual:.3}" }
+                                            td { class: "nutrient-cell p", "{current.p_actual:.3}" }
+                                            td { class: "nutrient-cell ca", "{current.ca_actual:.3}" }
+                                            td { class: "nutrient-cell mg", "{current.mg_actual:.3}" }
+                                            td { class: "nutrient-cell s", "{current.s_actual:.3}" }
+                                            td { class: "nutrient-cell cl", "{current.cl_actual:.3}" }
+                                            td { class: "status-live", "🔄 Live" }
                                         }
                                     }
                                 }
@@ -695,7 +766,7 @@ fn FertilizerOptimizer() -> Element {
     }
 }
 
-fn optimize_recipe(min_n: f64, max_n: f64, nh4_ratio: f64, min_k: f64, max_k: f64, min_p: f64, max_p: f64, min_ca: f64, max_ca: f64, min_mg: f64, max_mg: f64, min_s: f64, max_s: f64, min_cl: f64, max_cl: f64, salts: &[Salt]) -> Result<OptimizationResult> {
+fn optimize_recipe(min_n: f64, max_n: f64, nh4_ratio: f64, min_k: f64, max_k: f64, min_p: f64, max_p: f64, min_ca: f64, max_ca: f64, min_mg: f64, max_mg: f64, min_s: f64, max_s: f64, min_cl: f64, max_cl: f64, is_fine_tuning: bool, salts: &[Salt]) -> Result<OptimizationResult> {
     // Create variables using the good_lp API
     let mut vars = variables!();
     
@@ -713,7 +784,6 @@ fn optimize_recipe(min_n: f64, max_n: f64, nh4_ratio: f64, min_k: f64, max_k: f6
     let mut mg_expr = Expression::from(0.0);
     let mut s_expr = Expression::from(0.0);
     let mut cl_expr = Expression::from(0.0);
-    let mut fe_expr = Expression::from(0.0);
     
     for (i, salt) in salts.iter().enumerate() {
         if salt.nh4 != 0.0 {
@@ -740,14 +810,18 @@ fn optimize_recipe(min_n: f64, max_n: f64, nh4_ratio: f64, min_k: f64, max_k: f6
         if salt.cl != 0.0 {
             cl_expr = cl_expr + salt_vars[i] * salt.cl;
         }
-        if salt.fe != 0.0 {
-            fe_expr = fe_expr + salt_vars[i] * salt.fe;
-        }
     }
 
     // Objective: minimize total salt mass
     let total_mass = salt_vars.iter()
         .fold(Expression::from(0.0), |acc, &var| acc + var);
+
+    // Apply stricter constraints when fine-tuning
+    let (adj_min_cl, adj_max_cl) = if is_fine_tuning {
+        (min_cl, max_cl * 0.8) // Reduce max chloride by 20% when fine-tuning
+    } else {
+        (min_cl, max_cl)
+    };
 
     // Create and solve the model with all nutrient constraints
     let total_n_expr = nh4_expr.clone() + no3_expr.clone();
@@ -766,8 +840,8 @@ fn optimize_recipe(min_n: f64, max_n: f64, nh4_ratio: f64, min_k: f64, max_k: f6
         .with(constraint!(mg_expr.clone() <= max_mg))
         .with(constraint!(s_expr.clone() >= min_s))
         .with(constraint!(s_expr.clone() <= max_s))
-        .with(constraint!(cl_expr.clone() >= min_cl))
-        .with(constraint!(cl_expr.clone() <= max_cl))
+        .with(constraint!(cl_expr.clone() >= adj_min_cl))
+        .with(constraint!(cl_expr.clone() <= adj_max_cl))
         .solve()?;
 
     // Collect results
