@@ -1,0 +1,28 @@
+[package]
+name = "nh4no3"
+version = "0.1.0"
+authors = ["Andreas <andreas.halm1993@icloud.com>"]
+edition = "2021"
+
+[dependencies]
+dioxus = { version = "0.6.0", features = [] }
+good_lp = { version = "1", features = ["microlp"], default-features = false }
+anyhow   = "1"
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+#desktop = ["dioxus/desktop"]
+#mobile = ["dioxus/mobile"]
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
