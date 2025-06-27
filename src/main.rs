@@ -90,7 +90,7 @@ fn FertilizerOptimizer() -> Element {
     let mut comparison_history = use_signal(|| Vec::<ComparisonEntry>::new());
 
     let salts: Vec<Salt> = vec![
-        Salt { name: "Ca(NO₃)₂·4H₂O", nh4: 0.0, no3: 0.525133, p: 0.0, k: 0.0, ca: 0.169717, mg: 0.0, s: 0.0, cl: 0.0},
+        Salt { name: "Ca(NO₃)₂·4H₂O", nh4: 0.0142, no3: 0.6375, p: 0.0, k: 0.0, ca: 0.169717, mg: 0.0, s: 0.0, cl: 0.0},
         Salt { name: "Mg(NO₃)₂·6H₂O", nh4: 0.0, no3: 0.483645, p: 0.0, k: 0.0, ca: 0.0, mg: 0.094792, s: 0.0, cl: 0.0},
         Salt { name: "KNO₃", nh4: 0.0, no3: 0.613282, p: 0.0, k: 0.386718, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
         Salt { name: "(NH₄)₂SO₄", nh4: 0.273031, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.242661, cl: 0.0},
@@ -142,22 +142,7 @@ fn FertilizerOptimizer() -> Element {
         }
     });
 
-    let fine_tune = {
-        let salts = salts.clone();
-        move |_| {
-            let optimization_result = optimize_recipe(min_n(), max_n(), nh4_ratio(), min_k(), max_k(), min_p(), max_p(), min_ca(), max_ca(), min_mg(), max_mg(), min_s(), max_s(), min_cl(), max_cl(), true, &salts);
-            match optimization_result {
-                Ok(res) => {
-                    result.set(Some(res.clone()));
-                    current_result.set(Some(res));
-                    error_msg.set(None);
-                }
-                Err(e) => {
-                    error_msg.set(Some(format!("Feinabstimmung fehlgeschlagen: {}", e)));
-                }
-            }
-        }
-    };
+
 
     let save_recipe = move |_| {
         if let Some(res) = current_result() {
@@ -211,8 +196,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-n",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "40.0",
-                                        max: "40.0",
+                                        min: "30.0",
+                                        max: "50.0",
                                         value: if min_n_focused() { "{min_n}" } else { "" },
                                         placeholder: "{min_n}",
                                         onfocus: move |_| {
@@ -234,8 +219,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-n",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "40.0",
-                                        max: "40.0",
+                                        min: "30.0",
+                                        max: "50.0",
                                         value: if max_n_focused() { "{max_n}" } else { "" },
                                         placeholder: "{max_n}",
                                         onfocus: move |_| {
@@ -625,9 +610,7 @@ fn FertilizerOptimizer() -> Element {
                             }
                         }
 
-                        button { class: "optimize-btn", onclick: fine_tune,
-                            "🔬 Feinabstimmung"
-                        }
+
 
                         if let Some(_) = result() {
                             button { class: "save-btn", onclick: save_recipe,
