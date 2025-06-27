@@ -15,7 +15,7 @@ body {
 
 /* Container layout */
 .container {
-    max-width: 1400px;
+    max-width: 90vw;
     margin: 0 auto;
     padding: 2rem 1rem;
     min-height: 100vh;
@@ -42,11 +42,43 @@ body {
     background-clip: text;
 }
 
-.subtitle {
+.description {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.subtitle-main {
     font-size: 1.1rem;
     color: #a1a1aa;
-    max-width: 600px;
-    margin: 0 auto;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.subtitle-usage {
+    font-size: 1.05rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.subtitle-demo {
+    font-size: 1.05rem;
+    color: #06b6d4;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(6, 182, 212, 0.1);
+    border-left: 3px solid #06b6d4;
+    border-radius: 0 8px 8px 0;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.subtitle-error {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin-bottom: 0;
+    font-style: italic;
+    line-height: 1.6;
 }
 
 /* Main layout */
@@ -171,7 +203,6 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-secondary);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
@@ -383,7 +414,6 @@ body {
     padding: 1rem 0.75rem;
     text-align: center;
     font-weight: 600;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 0.8rem;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);

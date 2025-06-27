@@ -51,38 +51,38 @@ struct ComparisonEntry {
 
 #[component]
 fn FertilizerOptimizer() -> Element {
-    let mut min_n = use_signal(|| 3.0);
+    let mut min_n = use_signal(|| 40.0);
     let mut min_n_focused = use_signal(|| false);
-    let mut max_n = use_signal(|| 3.0);
+    let mut max_n = use_signal(|| 40.0);
     let mut max_n_focused = use_signal(|| false);
-    let mut nh4_percentage = use_signal(|| 25.0);
-    let mut no3_percentage = use_signal(|| 75.0);
+    let mut nh4_percentage = use_signal(|| 50.0);
+    let mut no3_percentage = use_signal(|| 50.0);
     let mut nh4_focused = use_signal(|| false);
     let mut no3_focused = use_signal(|| false);
     let nh4_ratio = move || nh4_percentage() / 100.0;
-    let mut min_k = use_signal(|| 1.0);
+    let mut min_k = use_signal(|| 15.0);
     let mut min_k_focused = use_signal(|| false);
-    let mut max_k = use_signal(|| 5.0);
+    let mut max_k = use_signal(|| 25.0);
     let mut max_k_focused = use_signal(|| false);
-    let mut min_p = use_signal(|| 0.5);
+    let mut min_p = use_signal(|| 4.0);
     let mut min_p_focused = use_signal(|| false);
-    let mut max_p = use_signal(|| 2.0);
+    let mut max_p = use_signal(|| 8.0);
     let mut max_p_focused = use_signal(|| false);
-    let mut min_ca = use_signal(|| 1.0);
+    let mut min_ca = use_signal(|| 10.0);
     let mut min_ca_focused = use_signal(|| false);
-    let mut max_ca = use_signal(|| 4.0);
+    let mut max_ca = use_signal(|| 15.0);
     let mut max_ca_focused = use_signal(|| false);
-    let mut min_mg = use_signal(|| 0.3);
+    let mut min_mg = use_signal(|| 4.0);
     let mut min_mg_focused = use_signal(|| false);
-    let mut max_mg = use_signal(|| 1.5);
+    let mut max_mg = use_signal(|| 5.0);
     let mut max_mg_focused = use_signal(|| false);
-    let mut min_s = use_signal(|| 0.2);
+    let mut min_s = use_signal(|| 20.0);
     let mut min_s_focused = use_signal(|| false);
-    let mut max_s = use_signal(|| 1.0);
+    let mut max_s = use_signal(|| 25.0);
     let mut max_s_focused = use_signal(|| false);
     let mut min_cl = use_signal(|| 0.0);
     let mut min_cl_focused = use_signal(|| false);
-    let mut max_cl = use_signal(|| 2.0);
+    let mut max_cl = use_signal(|| 75.0);
     let mut max_cl_focused = use_signal(|| false);
     let mut result = use_signal(|| None::<OptimizationResult>);
     let mut current_result = use_signal(|| None::<OptimizationResult>);
@@ -100,9 +100,7 @@ fn FertilizerOptimizer() -> Element {
         Salt { name: "K₂SO₄", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.448740, ca: 0.0, mg: 0.0, s: 0.184010, cl: 0.0},
         Salt { name: "MgSO₄·7H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.098612, s: 0.130096, cl: 0.0},
         Salt { name: "CaCl₂·2H₂O", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.272625, mg: 0.0, s: 0.0, cl: 0.482287},
-        Salt { name: "Fe‑EDDHA 6%", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
         Salt { name: "Ferty 10", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
-        Salt { name: "Ferty 12", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
         Salt { name: "Ferty 72", nh4: 0.0, no3: 0.0, p: 0.0, k: 0.0, ca: 0.0, mg: 0.0, s: 0.0, cl: 0.0},
     ];
 
@@ -181,9 +179,20 @@ fn FertilizerOptimizer() -> Element {
     rsx! {
         div { class: "container",
             header { class: "header",
-                h1 { "🧪 Fertilizer Recipe Optimizer" }
-                p { class: "subtitle", 
-                    "Optimize nutrient salt mixtures for desired NH₄⁺/NO₃⁻ ratios while minimizing total salt mass"
+                h1 { "🧪 Nährlösungs-Rezeptur-Optimierer" }
+                div { class: "description",
+                    p { class: "subtitle-main", 
+                        "Diese Website löst ein mathematisches Optimierungsproblem mittels linearer Programmierung. Der good_lp-Algorithmus berechnet die minimale Salzmasse, die erforderlich ist, um definierte Nährstoffkonzentrationen zu erreichen. Dabei werden die Massenbilanzgleichungen aller Makronährstoffe (NH₄⁺, NO₃⁻, K, P, Ca, Mg, S, Cl) als Nebenbedingungen berücksichtigt."
+                    }
+                    p { class: "subtitle-usage", 
+                        "Die Parameter können links eingestellt werden, wobei die Berechnung in Echtzeit erfolgt. Die 'Optimale Rezeptur' zeigt die berechneten Salzmengen in g/L für Stammlösungen A und B. Der 'Vergleich der Nährlösungs-Rezepturen' dokumentiert mittels ‘Rezeptur speichern’ verschiedene NH₄⁺-Anteile mit den resultierenden Nährstoffkonzentrationen und ermöglicht den direkten Vergleich gespeicherter Rezepturen."
+                    }
+                    p { class: "subtitle-demo", 
+                        "Klicken Sie in das NH₄⁺-Feld und nutzen die Pfeiltasten ↑/↓, um zu beobachten, wie sich die 'Optimale Rezeptur' und der 'Vergleich der Nährlösungs-Rezepturen' in Echtzeit verändern."
+                    }
+                    p { class: "subtitle-error", 
+                        "Falls eine 'Nicht lösbar'-Meldung erscheint, sind die gewählten Parameterbereiche mathematisch unvereinbar - die verfügbaren Salze können die Zielkonzentrationen nicht gleichzeitig erfüllen."
+                    }
                 }
             }
 
@@ -191,10 +200,10 @@ fn FertilizerOptimizer() -> Element {
                 // Left column - Parameters
                 div { class: "left-column",
                     div { class: "input-section",
-                        h2 { "Parameters" }
+                        h2 { "Parameter" }
                         
                         div { class: "input-group",
-                            label { "Total Nitrogen Range (g·L⁻¹)" }
+                            label { "Stickstoff-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-n", "Min" }
@@ -202,8 +211,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-n",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.1",
-                                        max: "20.0",
+                                        min: "40.0",
+                                        max: "40.0",
                                         value: if min_n_focused() { "{min_n}" } else { "" },
                                         placeholder: "{min_n}",
                                         onfocus: move |_| {
@@ -225,8 +234,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-n",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.1",
-                                        max: "20.0",
+                                        min: "40.0",
+                                        max: "40.0",
                                         value: if max_n_focused() { "{max_n}" } else { "" },
                                         placeholder: "{max_n}",
                                         onfocus: move |_| {
@@ -246,7 +255,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Nitrogen Ratio (%)" }
+                            label { "Stickstoff-Verhältnis (%)" }
                             div { class: "ratio-inputs",
                                 div { class: "ratio-field",
                                     label { r#for: "nh4-percent", "NH₄⁺" }
@@ -301,11 +310,11 @@ fn FertilizerOptimizer() -> Element {
                                     }
                                 }
                             }
-                            small { "NH₄⁺ and NO₃⁻ percentages of total nitrogen" }
+                            small { "NH₄⁺- und NO₃⁻-Anteil am Gesamtstickstoff" }
                         }
 
                         div { class: "input-group",
-                            label { "Potassium Range (g·L⁻¹)" }
+                            label { "Kalium-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-k", "Min" }
@@ -313,8 +322,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-k",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "10.0",
+                                        min: "15.0",
+                                        max: "25.0",
                                         value: if min_k_focused() { "{min_k}" } else { "" },
                                         placeholder: "{min_k}",
                                         onfocus: move |_| {
@@ -336,8 +345,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-k",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "10.0",
+                                        min: "15.0",
+                                        max: "25.0",
                                         value: if max_k_focused() { "{max_k}" } else { "" },
                                         placeholder: "{max_k}",
                                         onfocus: move |_| {
@@ -357,7 +366,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Phosphorus Range (g·L⁻¹)" }
+                            label { "Phosphor-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-p", "Min" }
@@ -365,8 +374,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-p",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "5.0",
+                                        min: "4.0",
+                                        max: "6.0",
                                         value: if min_p_focused() { "{min_p}" } else { "" },
                                         placeholder: "{min_p}",
                                         onfocus: move |_| {
@@ -388,8 +397,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-p",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "5.0",
+                                        min: "4.0",
+                                        max: "6.0",
                                         value: if max_p_focused() { "{max_p}" } else { "" },
                                         placeholder: "{max_p}",
                                         onfocus: move |_| {
@@ -409,7 +418,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Calcium Range (g·L⁻¹)" }
+                            label { "Kalzium-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-ca", "Min" }
@@ -417,8 +426,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-ca",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "5.0",
+                                        min: "9.0",
+                                        max: "15.0",
                                         value: if min_ca_focused() { "{min_ca}" } else { "" },
                                         placeholder: "{min_ca}",
                                         onfocus: move |_| {
@@ -440,8 +449,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-ca",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "5.0",
+                                        min: "9.0",
+                                        max: "15.0",
                                         value: if max_ca_focused() { "{max_ca}" } else { "" },
                                         placeholder: "{max_ca}",
                                         onfocus: move |_| {
@@ -461,7 +470,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Magnesium Range (g·L⁻¹)" }
+                            label { "Magnesium-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-mg", "Min" }
@@ -469,8 +478,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-mg",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "3.0",
+                                        min: "3.5",
+                                        max: "6.0",
                                         value: if min_mg_focused() { "{min_mg}" } else { "" },
                                         placeholder: "{min_mg}",
                                         onfocus: move |_| {
@@ -492,8 +501,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-mg",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "3.0",
+                                        min: "3.5",
+                                        max: "6.0",
                                         value: if max_mg_focused() { "{max_mg}" } else { "" },
                                         placeholder: "{max_mg}",
                                         onfocus: move |_| {
@@ -513,7 +522,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Schwefel Range (g·L⁻¹)" }
+                            label { "Schwefel-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-s", "Min" }
@@ -521,8 +530,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "min-s",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "2.0",
+                                        min: "15.0",
+                                        max: "35.0",
                                         value: if min_s_focused() { "{min_s}" } else { "" },
                                         placeholder: "{min_s}",
                                         onfocus: move |_| {
@@ -544,8 +553,8 @@ fn FertilizerOptimizer() -> Element {
                                         id: "max-s",
                                         r#type: "number",
                                         step: "0.1",
-                                        min: "0.0",
-                                        max: "2.0",
+                                        min: "15.0",
+                                        max: "35.0",
                                         value: if max_s_focused() { "{max_s}" } else { "" },
                                         placeholder: "{max_s}",
                                         onfocus: move |_| {
@@ -565,7 +574,7 @@ fn FertilizerOptimizer() -> Element {
                         }
 
                         div { class: "input-group",
-                            label { "Chloride Range (g·L⁻¹)" }
+                            label { "Chlorid-Bereich (g·l⁻¹)" }
                             div { class: "range-inputs",
                                 div { class: "range-field",
                                     label { r#for: "min-cl", "Min" }
@@ -574,7 +583,7 @@ fn FertilizerOptimizer() -> Element {
                                         r#type: "number",
                                         step: "0.1",
                                         min: "0.0",
-                                        max: "5.0",
+                                        max: "75.0",
                                         value: if min_cl_focused() { "{min_cl}" } else { "" },
                                         placeholder: "{min_cl}",
                                         onfocus: move |_| {
@@ -597,7 +606,7 @@ fn FertilizerOptimizer() -> Element {
                                         r#type: "number",
                                         step: "0.1",
                                         min: "0.0",
-                                        max: "5.0",
+                                        max: "75.0",
                                         value: if max_cl_focused() { "{max_cl}" } else { "" },
                                         placeholder: "{max_cl}",
                                         onfocus: move |_| {
@@ -622,7 +631,7 @@ fn FertilizerOptimizer() -> Element {
 
                         if let Some(_) = result() {
                             button { class: "save-btn", onclick: save_recipe,
-                                "💾 Rezept speichern"
+                                "💾 Rezeptur speichern"
                             }
                         }
 
@@ -645,7 +654,7 @@ fn FertilizerOptimizer() -> Element {
                                 table {
                                     thead {
                                         tr {
-                                            th { "Salt" }
+                                            th { "Salz" }
                                             th { "SL A" }
                                             th { "SL B" }
                                         }
@@ -656,41 +665,33 @@ fn FertilizerOptimizer() -> Element {
                                             if name == "CaCl₂·2H₂O" || name == "Ca(NO₃)₂·4H₂O" || name == "Mg(NO₃)₂·6H₂O" {
                                                 tr {
                                                     td { class: "salt-name", "{name}" }
-                                                    td { class: "amount", "{amount:.3}" }
+                                                    td { class: "amount", "{amount:.2}" }
                                                     td { class: "amount", "—" }
                                                 }
                                             }
                                         }
-                                        // Always display Ferty 12 as last element of SL A
+                                        // Always display Ferty 72 as last element of SL A
                                         tr {
-                                            td { class: "salt-name", "Ferty 12" }
-                                            if let Some((_, amount)) = res.recipe.iter().find(|(name, _)| name == "Ferty 12") {
-                                                td { class: "amount", "{amount:.3}" }
-                                            } else {
-                                                td { class: "amount", "0.000" }
-                                            }
+                                            td { class: "salt-name", "Ferty 72" }
+                                            td { class: "amount", "0.30" }
                                             td { class: "amount", "—" }
                                         }
                                         
                                         // Then display SL B salts
                                         for (name, amount) in res.recipe.iter() {
-                                            if !(name == "CaCl₂·2H₂O" || name == "Ca(NO₃)₂·4H₂O" || name == "Mg(NO₃)₂·6H₂O" || name == "Ferty 12" || name == "Ferty 72") {
+                                            if !(name == "CaCl₂·2H₂O" || name == "Ca(NO₃)₂·4H₂O" || name == "Mg(NO₃)₂·6H₂O" || name == "Ferty 72") {
                                                 tr {
                                                     td { class: "salt-name", "{name}" }
                                                     td { class: "amount", "—" }
-                                                    td { class: "amount", "{amount:.3}" }
+                                                    td { class: "amount", "{amount:.2}" }
                                                 }
                                             }
                                         }
-                                        // Always display Ferty 72 as last element of SL B
+                                        // Always display Ferty 10 as last element of SL B
                                         tr {
-                                            td { class: "salt-name", "Ferty 72" }
+                                            td { class: "salt-name", "Ferty 10" }
                                             td { class: "amount", "—" }
-                                            if let Some((_, amount)) = res.recipe.iter().find(|(name, _)| name == "Ferty 72") {
-                                                td { class: "amount", "{amount:.3}" }
-                                            } else {
-                                                td { class: "amount", "0.000" }
-                                            }
+                                            td { class: "amount", "2.24" }
                                         }
                                     }
                                 }
@@ -701,10 +702,10 @@ fn FertilizerOptimizer() -> Element {
                     // Comparison table - always visible
                     div { class: "comparison-section",
                         div { class: "comparison-header",
-                            h2 { "📊 Ratio Comparison" }
+                            h2 { "Vergleich der Nährlösungs-Rezepturen" }
                             if !comparison_history().is_empty() {
                                 button { class: "clear-btn", onclick: clear_history,
-                                    "Clear History"
+                                    "Verlauf löschen"
                                 }
                             }
                         }
@@ -713,15 +714,15 @@ fn FertilizerOptimizer() -> Element {
                             table {
                                 thead {
                                     tr {
-                                        th { "NH₄⁺ Ratio" }
-                                        th { "NH₄⁺ (g·L⁻¹)" }
-                                        th { "NO₃⁻ (g·L⁻¹)" }
-                                        th { "K⁺ (g·L⁻¹)" }
-                                        th { "P (g·L⁻¹)" }
-                                        th { "Ca²⁺ (g·L⁻¹)" }
-                                        th { "Mg²⁺ (g·L⁻¹)" }
-                                        th { "S (g·L⁻¹)" }
-                                        th { "Cl⁻ (g·L⁻¹)" }
+                                        th { "NH₄⁺-Anteil" }
+                                        th { "NH₄⁺ (g·l⁻¹)" }
+                                        th { "NO₃⁻ (g·l⁻¹)" }
+                                        th { "K⁺ (g·l⁻¹)" }
+                                        th { "P (g·l⁻¹)" }
+                                        th { "Ca²⁺ (g·l⁻¹)" }
+                                        th { "Mg²⁺ (g·l⁻¹)" }
+                                        th { "S (g·l⁻¹)" }
+                                        th { "Cl⁻ (g·l⁻¹)" }
                                         th { "Status" }
                                     }
                                 }
@@ -744,7 +745,7 @@ fn FertilizerOptimizer() -> Element {
                                     // Show current live result
                                     if let Some(current) = current_result() {
                                         tr { class: "current-row",
-                                            td { class: "ratio-cell current", "{nh4_percentage():.0}% NH₄⁺" }
+                                            td { class: "ratio-cell current", "{nh4_percentage():.0} % NH₄⁺" }
                                             td { class: "nutrient-cell nh4", "{current.nh4_actual:.3}" }
                                             td { class: "nutrient-cell no3", "{current.no3_actual:.3}" }
                                             td { class: "nutrient-cell k", "{current.k_actual:.3}" }
