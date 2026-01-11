@@ -388,6 +388,7 @@ body {
         transform: translateY(-100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -395,21 +396,28 @@ body {
 }
 
 @keyframes shake {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0) rotate(0deg);
     }
+
     25% {
         transform: translateX(-5px) rotate(-5deg);
     }
+
     75% {
         transform: translateX(5px) rotate(5deg);
     }
 }
 
 @keyframes errorPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1), 0 8px 32px rgba(239, 68, 68, 0.3);
     }
+
     50% {
         box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.2), 0 12px 48px rgba(239, 68, 68, 0.5);
     }
@@ -689,11 +697,11 @@ body {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .left-column {
         position: static;
     }
-    
+
     .right-column {
         min-height: auto;
     }
@@ -703,65 +711,67 @@ body {
     .container {
         padding: 1rem;
     }
-    
+
     .header h1 {
         font-size: 2rem;
     }
-    
-    .input-section, .results-section, .comparison-section {
+
+    .input-section,
+    .results-section,
+    .comparison-section {
         padding: 1.5rem;
     }
-    
+
     .recipe-table th,
     .recipe-table td {
         padding: 0.5rem;
         font-size: 0.9rem;
     }
-    
+
     .comparison-header {
         flex-direction: column;
         gap: 1rem;
         align-items: stretch;
     }
-    
+
     .comparison-actions {
         flex-direction: column;
         width: 100%;
     }
-    
+
     .micro-btn,
     .clear-btn {
         width: 100%;
     }
-    
+
     /* Error banner mobile layout */
     .error-banner-content {
         grid-template-columns: auto 1fr;
         gap: 1rem;
         padding: 1rem 1.5rem;
     }
-    
+
     .error-icon {
         font-size: 2rem;
     }
-    
+
     .error-hint {
         grid-column: 1 / -1;
         font-size: 0.85rem;
     }
-    
+
     .error-title {
         font-size: 1.1rem;
     }
-    
+
     .error-message {
         font-size: 0.9rem;
     }
-    
+
     .comparison-table {
         font-size: 0.8rem;
     }
-    
+
     .comparison-table th,
     .comparison-table td {
         padding: 0.5rem 0.25rem;
@@ -774,6 +784,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -871,9 +882,12 @@ body {
 
 /* Pulse animation for live status */
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.7;
     }
@@ -1178,9 +1192,12 @@ body {
 }
 
 @keyframes warningPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1), 0 8px 32px rgba(239, 68, 68, 0.3);
     }
+
     50% {
         box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.2), 0 12px 48px rgba(239, 68, 68, 0.5);
     }
@@ -1201,6 +1218,7 @@ body {
         transform: translateY(-10px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -1442,7 +1460,7 @@ body {
     .solutions-layout {
         grid-template-columns: 1fr;
     }
-    
+
     .salt-tiles-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
@@ -1452,29 +1470,53 @@ body {
     .toolbar {
         flex-direction: column;
     }
-    
+
     .nutrient-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .solutions-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .salt-tiles-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 0.75rem;
     }
-    
+
     .compact-nutrient-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .form-row-compact {
         grid-template-columns: 1fr;
     }
+}
+
+/* Impressum styles */
+.impressum-container {
+    max-width: 90vw;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+}
+
+.impressum-container h2 {
+    font-size: 1.2rem;
+    color: #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.impressum-section p {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    max-width: 800px;
+    /* Optional: limit width for readability */
 }

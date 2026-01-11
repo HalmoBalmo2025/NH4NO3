@@ -150,10 +150,20 @@ pub fn FertilizerOptimizer() -> Element {
                 h1 { "🧪 Nährlösungs-Rezeptur-Optimierer" }
                 div { class: "description",
                     p { class: "subtitle-main", 
-                        "Diese Website löst ein mathematisches Optimierungsproblem mittels linearer Programmierung. Der good_lp-Algorithmus berechnet die minimale Salzmasse, die erforderlich ist, um definierte Nährstoffkonzentrationen zu erreichen. Dabei werden die Massenbilanzgleichungen aller Makro- und Mikronährstoffe als Nebenbedingungen berücksichtigt."
+                        "Diese Website löst ein mathematisches Optimierungsproblem mittels linearer Programmierung. Der good_lp-Algorithmus berechnet die minimale Salzmasse, die erforderlich ist, um definierte Nährstoffkonzentrationen zu erreichen. Dabei werden die Massenbilanzgleichungen aller Makronährstoffe (NH₄⁺, NO₃⁻, K, P, Ca, Mg, S, Cl) als Nebenbedingungen berücksichtigt."
+                    }
+                    p { class: "subtitle-usage", 
+                        "Die Parameter können links eingestellt werden, wobei die Berechnung in Echtzeit erfolgt. Die 'Optimale Rezeptur' zeigt die berechneten Salzmengen in g/L für Stammlösungen A und B. Der 'Vergleich der Nährlösungs-Rezepturen' dokumentiert mittels ‘Rezeptur speichern’ verschiedene NH₄⁺-Anteile mit den resultierenden Nährstoffkonzentrationen und ermöglicht den direkten Vergleich gespeicherter Rezepturen."
+                    }
+                    p { class: "subtitle-demo", 
+                        "Klicken Sie in das NH₄⁺-Feld und nutzen die Pfeiltasten ↑/↓, um zu beobachten, wie sich die 'Optimale Rezeptur' und der 'Vergleich der Nährlösungs-Rezepturen' in Echtzeit verändern."
+                    }
+                    p { class: "subtitle-usage",
+                        "Neu: Neben den Makronährstoffen werden nun auch Mikronährstoffe in der Optimierung berücksichtigt. Zudem haben Sie die Möglichkeit, eigene Nährsalze hinzuzufügen und die Datenbank individuell zu erweitern."
                     }
                 }
             }
+
 
             // Toolbar
             div { class: "toolbar",
